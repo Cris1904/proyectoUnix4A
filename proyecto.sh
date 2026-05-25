@@ -25,6 +25,7 @@ menu(){
 	2) alta;;
 	3) baja;;
 	4) consulta;;
+	5) modificar;;
 	esac
 }
 
@@ -40,15 +41,15 @@ mostrar(){
 }
 
 existe(){
-	echo -n " ID pokemon: "; read ID
-        registroPokemon=$(awk -F: -v clave="$ID" '($1==clave){print}' pokemones.datos)
+        registroPokemon=$(awk -F: -v clave="$1" '$1==clave{print $0}' pokemones.datos)
 }
 
 alta(){
 	clear
 	echo -e "\tGenerando alta de pokemon\n"
+	echo -n " Id: "; read ID
 	#preguntamos ID del pokemon que se desea dar de alta para ver si existe
-	existe
+	existe "$ID"
 	#si la funcion existe no guarda nada (vacio) quiere decir que no hay
 	#pokemon registrado que coincida con esa clave o ID
 	if [ "$registroPokemon" == "" ]
@@ -61,7 +62,7 @@ alta(){
 		echo -n " Habitat: "; read habitat
 		echo -n " Habilidad: "; read habilidad
 		echo -n " Ratio de captura: "; read ratioCaptura
-		echo -n " HP: "; read HP
+		echo -n " HP :" read HP		
 		echo -n " Ataque: "; read ataque
 		echo -n " Defensa: "; read defensa
 		echo -n " Velocidad: "; read velocidad
@@ -71,6 +72,55 @@ alta(){
 	fi
 	echo ""
 	read -p " Presione ENTER para continuar"
+}
+
+modificar(){
+	echo -n "ID: "; read Id
+	existe "$Id"
+	if test "$registroPokemon" != ""
+	then #modificar
+		echo -n " Nombre del pokemon: "; read nombre
+                echo -n " Especie: "; read especie
+                echo -n " Altura: "; read altura
+                echo -n " Peso: "; read peso
+                echo -n " Generacion: "; read generacion
+                echo -n " Habitat: "; read habitat
+                echo -n " Habilidad: "; read habilidad
+                echo -n " Ratio de captura: "; read ratioCaptura
+                echo -n " HP :"; read HP         
+                echo -n " Ataque: "; read ataque
+                echo -n " Defensa: "; read defensa
+                echo -n " Velocidad: "; read velocidad
+
+	awk -F: -v llave="$Id" -v nom=$"$nombre" -v esp="$especie"\
+	        -v alt="$altura" -v pes="$peso" -v gen="$generacion"\
+                -v  habit="$habitat" -v habil="$habilidad"\
+                -v ratio="$ratioCaptura" -v vida="$HP" -v ataq="$ataque"\
+                -v def="$defensa" -v vel="$velocidad" '
+	 ($1==llave){
+	  if(nom==""){nom=$2}
+	  if(esp==""){esp=$3}
+          if(alt==""){alt=$4}
+          if(pes==""){pes=$5}
+          if(gen==""){gen=$6}
+          if(habit==""){habit=$7}
+          if(habil==""){habil=$8}
+          if(ratio==""){ratio=$9}
+          if(vida==""){vida=$10}
+          if(ataq==""){ataq=$11}
+          if(def==""){def=$12}
+          if(vel==""){vel=$13}
+          print llave " : " nom " : " esp " : " alt " : " pes " : " gen " : " habit " : " habil " : " ratio " : " vida " : " ataq " : " def " : " vel 
+	}
+	($1!=llave){print}
+	' pokemones.datos > temporal.datos
+	mv temporal.datos pokemones.datos
+	echo -e "Pokemon modificado con exito!"
+	else
+	echo -e "El registro pokemon no existe!"
+	fi
+	echo ""
+        read -p " Presione ENTER para continuar"
 }
 
 baja(){
@@ -89,8 +139,9 @@ baja(){
 consulta(){
 	clear
 	echo -e "\tConsultado datos de pokemon\n"
+	echo -n " Id: "; read Id
 	#preguntamos si existe
-	existe
+	existe "$Id"
 	#si se guardo algo en registroPokemon quiere decir que hubo
 	#una coincidencia entonces mostramos los datos del pokemon
 	if [ "$registroPokemon" != "" ]
@@ -100,6 +151,7 @@ consulta(){
 	echo ""
 	read -p " Presiona ENTER para continuar"
 }
+
 
 #codigo main
 	opcion
