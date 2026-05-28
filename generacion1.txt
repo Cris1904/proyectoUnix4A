@@ -1,0 +1,15 @@
+--------------------------------------
+ID: 1
+Nombre del pokemon: taniamon
+Especie: rara
+Altura: 155
+Peso: 60
+Generacion: 1
+Habitat: bosque
+Habilidad: dormir
+Ratio de captura: 12
+HP: 120
+Ataque: 500
+Defensa: 100
+Velocidad: 50
+--------------------------------------

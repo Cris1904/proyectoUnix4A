@@ -1,0 +1,15 @@
+--------------------------------------
+ID: 1234
+Nombre del pokemon: ulisesmon
+Especie: therian
+Altura: 190
+Peso: 120
+Generacion: 4
+Habitat: bosque
+Habilidad: dormir
+Ratio de captura: 120
+HP: 100
+Ataque: 40
+Defensa: 20
+Velocidad: 50
+--------------------------------------

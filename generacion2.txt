@@ -1,0 +1,15 @@
+--------------------------------------
+ID: 4567
+Nombre del pokemon: cristianmon
+Especie: unica
+Altura: 170
+Peso: 40
+Generacion: 2
+Habitat: micasa
+Habilidad: avatar
+Ratio de captura: 20
+HP: 
+Ataque: 12
+Defensa: 30
+Velocidad: 5
+--------------------------------------

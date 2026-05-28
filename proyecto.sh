@@ -26,6 +26,7 @@ menu(){
 	3) baja;;
 	4) consulta;;
 	5) modificar;;
+	6) reporte;;
 	esac
 }
 
@@ -62,7 +63,7 @@ alta(){
 		echo -n " Habitat: "; read habitat
 		echo -n " Habilidad: "; read habilidad
 		echo -n " Ratio de captura: "; read ratioCaptura
-		echo -n " HP :" read HP		
+		echo -n " HP :"; read HP
 		echo -n " Ataque: "; read ataque
 		echo -n " Defensa: "; read defensa
 		echo -n " Velocidad: "; read velocidad
@@ -75,6 +76,8 @@ alta(){
 }
 
 modificar(){
+	clear
+	echo -e "\tGenerar modificacion a un pokemon\n"
 	echo -n "ID: "; read Id
 	existe "$Id"
 	if test "$registroPokemon" != ""
@@ -87,7 +90,7 @@ modificar(){
                 echo -n " Habitat: "; read habitat
                 echo -n " Habilidad: "; read habilidad
                 echo -n " Ratio de captura: "; read ratioCaptura
-                echo -n " HP :"; read HP         
+                echo -n " HP :"; read HP
                 echo -n " Ataque: "; read ataque
                 echo -n " Defensa: "; read defensa
                 echo -n " Velocidad: "; read velocidad
@@ -110,7 +113,7 @@ modificar(){
           if(ataq==""){ataq=$11}
           if(def==""){def=$12}
           if(vel==""){vel=$13}
-          print llave " : " nom " : " esp " : " alt " : " pes " : " gen " : " habit " : " habil " : " ratio " : " vida " : " ataq " : " def " : " vel 
+          print llave ":" nom ":" esp ":" alt ":" pes ":" gen ":" habit ":" habil ":" ratio ":" vida ":" ataq ":" def ":" vel 
 	}
 	($1!=llave){print}
 	' pokemones.datos > temporal.datos
@@ -125,7 +128,7 @@ modificar(){
 
 baja(){
 	clear
-	echo -e " \tGenerando baja de pokemon\n"
+	echo -e "\tGenerando baja de pokemon\n"
 	echo -n " ID del pokemon que deseas borrar: "; read ID
 	#mandamos a un archivo temporal todos aquellos pokemones que no
 	#coincidan con el ID del pokemon que se desea borrar
@@ -152,7 +155,40 @@ consulta(){
 	read -p " Presiona ENTER para continuar"
 }
 
+existeGen(){
+	hayGeneracion=$(awk -F: -v llave="$numGeneracion" '($6==llave){print}' pokemones.datos)
+}
 
+reporte(){
+	clear
+	echo -e "\tGenerando reporte\n"
+	echo -n " Generacion:"; read numGeneracion
+	existeGen "$numGeneracion"
+	if test "$hayGeneracion" != "" #si identificamos que hay tan siquiera un pokemon
+	then
+	awk -F: -v llave="$numGeneracion" '($6==llave){
+							printf "--------------------------------------\n";
+							printf "ID: %s\n",$1;
+							printf "Nombre del pokemon: %s\n",$2;
+							printf "Especie: %s\n",$3;
+							printf "Altura: %s\n",$4;
+							printf "Peso: %s\n",$5;
+							printf "Generacion: %s\n",$6;
+							printf "Habitat: %s\n",$7;
+							printf "Habilidad: %s\n",$8;
+							printf "Ratio de captura: %s\n",$9;
+							printf "HP: %s\n",$10;
+							printf "Ataque: %s\n",$11;
+							printf "Defensa: %s\n",$12;
+							printf "Velocidad: %s\n",$13;
+							printf "--------------------------------------\n"
+						      }' pokemones.datos > generacion"$numGeneracion".txt
+	echo -e " Se genero el archivo generacion$numGeneracion.txt\n"
+	else
+	echo -e " NO se genero el archivo (no hay pokemones de esa generacion)\n"
+	fi
+	read -p  " Presiona ENTER para continuar"
+}
 #codigo main
 	opcion
 	while [ "$opcion" != "0" ]
