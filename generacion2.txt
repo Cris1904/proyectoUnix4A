@@ -1,4 +1,18 @@
 --------------------------------------
+ID: 1234
+Nombre del pokemon: ulisesmon
+Especie: therian
+Altura: 190
+Peso: 120
+Generacion: 2
+Habitat: bosque
+Habilidad: dormir
+Ratio de captura: 120
+HP: 100
+Ataque: 40
+Defensa: 20
+Velocidad: 50
+--------------------------------------
 ID: 4567
 Nombre del pokemon: cristianmon
 Especie: unica
@@ -12,4 +26,3 @@ HP:
 Ataque: 12
 Defensa: 30
 Velocidad: 5
---------------------------------------

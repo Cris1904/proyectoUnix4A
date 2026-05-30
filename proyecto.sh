@@ -48,7 +48,7 @@ existe(){
 alta(){
 	clear
 	echo -e "\tGenerando alta de pokemon\n"
-	echo -n " Id: "; read ID
+	echo -n " ID: "; read ID
 	#preguntamos ID del pokemon que se desea dar de alta para ver si existe
 	existe "$ID"
 	#si la funcion existe no guarda nada (vacio) quiere decir que no hay
@@ -75,34 +75,59 @@ alta(){
 	read -p " Presione ENTER para continuar"
 }
 
-modificar(){
+menuModificar(){
 	clear
-	echo -e "\tGenerar modificacion a un pokemon\n"
-	echo -n "ID: "; read Id
-	existe "$Id"
-	if test "$registroPokemon" != ""
-	then #modificar
-		echo -n " Nombre del pokemon: "; read nombre
-                echo -n " Especie: "; read especie
-                echo -n " Altura: "; read altura
-                echo -n " Peso: "; read peso
-                echo -n " Generacion: "; read generacion
-                echo -n " Habitat: "; read habitat
-                echo -n " Habilidad: "; read habilidad
-                echo -n " Ratio de captura: "; read ratioCaptura
-                echo -n " HP :"; read HP
-                echo -n " Ataque: "; read ataque
-                echo -n " Defensa: "; read defensa
-                echo -n " Velocidad: "; read velocidad
+        echo -e "\tSelecciona campo a modificar\n"
+        echo " 1) Nombre del pokemon"
+        echo " 2) Especie"
+        echo " 3) Altura"
+        echo " 4) Peso"
+        echo " 5) Generacion"
+        echo " 6) Habitat"
+        echo " 7) Habilidad"
+        echo " 8) Ratio de captura"
+        echo " 9) HP"
+        echo " 10) Ataque"
+        echo " 11) Defensa"
+        echo " 12) Velocidad"
+        echo " 13) Cancelar"
+	echo -n " Opcion: "; read opcion
+        case $opcion in
+        1) echo -en "\n Nuevo nombre del pokemon: "; read nombre; vacioModificar "$nombre";;
+       	2) echo -en "\n Nueva especie: "; read especie; vacioModificar "$especie";;
+        3) echo -en "\n Nueva altura: "; read altura; vacioModificar "$altura";;
+	4) echo -en "\n Nuevo peso: "; read peso; vacioModificar "$peso";;
+	5) echo -en "\n Nueva generacion: "; read generacion; vacioModificar "$generacion";;
+	6) echo -en "\n Nueva habitat: "; read habitat; vacioModificar "$habitat";;
+	7) echo -en "\n Nueva habilidad: "; read habilidad; vacioModificar "$habilidad";;
+        8) echo -en "\n Nuevo ratio de captura: "; read ratioCaptura; vacioModificar "$ratioCaptura";;
+        9) echo -en "\n Nuevo HP :"; read HP; vacioModificar "$HP";;
+        10) echo -en "\n Nuevo ataque: "; read ataque; vacioModificar "$ataque";;
+        11) echo -en "\n Nueva defensa: "; read defensa; vacioModificar "$defensa";;
+        12) echo -en "\n Nueva velocidad: "; read velocidad; vacioModificar "$velocidad";;
+        13|*) echo "" #no ejecuta ninguna accion;;
+        esac
+}
 
+vacioModificar(){
+	if [ "$1" != "" ]
+        then
+        	guardarModif
+        	echo -e "\n Se modifico el campo del pokemon\n"
+        else
+       		echo -e "\n Dejaste vacio, no se modifico\n"
+        fi
+}
+
+guardarModif(){
 	awk -F: -v llave="$Id" -v nom=$"$nombre" -v esp="$especie"\
-	        -v alt="$altura" -v pes="$peso" -v gen="$generacion"\
+                -v alt="$altura" -v pes="$peso" -v gen="$generacion"\
                 -v  habit="$habitat" -v habil="$habilidad"\
                 -v ratio="$ratioCaptura" -v vida="$HP" -v ataq="$ataque"\
                 -v def="$defensa" -v vel="$velocidad" '
-	 ($1==llave){
+         ($1==llave){
 	  if(nom==""){nom=$2}
-	  if(esp==""){esp=$3}
+          if(esp==""){esp=$3}
           if(alt==""){alt=$4}
           if(pes==""){pes=$5}
           if(gen==""){gen=$6}
@@ -114,16 +139,24 @@ modificar(){
           if(def==""){def=$12}
           if(vel==""){vel=$13}
           print llave ":" nom ":" esp ":" alt ":" pes ":" gen ":" habit ":" habil ":" ratio ":" vida ":" ataq ":" def ":" vel 
-	}
-	($1!=llave){print}
-	' pokemones.datos > temporal.datos
-	mv temporal.datos pokemones.datos
-	echo -e "Pokemon modificado con exito!"
-	else
-	echo -e "El registro pokemon no existe!"
+        }
+        ($1!=llave){print}
+        ' pokemones.datos > temporal.datos
+        mv temporal.datos pokemones.datos
+}
+
+modificar(){
+	clear
+	echo -e "\tGenerar modificacion a un Pokemon\n"
+	echo -n " ID: "; read Id
+	existe "$Id"
+	if test "$registroPokemon" != ""
+	then #modificamos con un menu de opciones para editar solo un campo a la vez
+		menuModificar
+      	else
+	echo -en "\n El registro pokemon no existe\n\n"
 	fi
-	echo ""
-        read -p " Presione ENTER para continuar"
+	read -p " Presiona ENTER para continuar"
 }
 
 baja(){
@@ -181,7 +214,6 @@ reporte(){
 							printf "Ataque: %s\n",$11;
 							printf "Defensa: %s\n",$12;
 							printf "Velocidad: %s\n",$13;
-							printf "--------------------------------------\n"
 						      }' pokemones.datos > generacion"$numGeneracion".txt
 	echo -e " Se genero el archivo generacion$numGeneracion.txt\n"
 	else
