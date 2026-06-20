@@ -1,7 +1,7 @@
 #!/bin/bash
-#Modulo:
+#Modulo: scrip principal que contiene la logica para el control de altas, bajas, cambios, consultas y reportes.
 #Objetivo:
-#Version: 1
+#Version: 1.6 (beta)
 #Autor:
 #	Duron Mendoza Antonio
 #	Lopez Acevedo Tania Jaquelin
@@ -9,6 +9,21 @@
 #	Vazquez Delgado Cristian de Jesus
 #Modo de uso:
 
+#Crea un archivo bandera para bloquear el acceso y evitar que otros modifiquen los datos al mismo tiempo.
+bloqueo(){
+    while [ -f bloquear.pokemones ]
+    do
+        sleep 5
+    done
+    touch bloquear.pokemones
+}
+
+#Elimina el archivo bandera para liberar el acceso a la base de datos a los demas.
+desbloqueo(){
+    rm bloquear.pokemones
+}
+
+#Muestra las opciones principales del sistema y ejecuta la funcion que el usuario seleccione.
 menu(){
 	clear
 	echo -e "\tMenu principal\n"
@@ -30,6 +45,7 @@ menu(){
 	esac
 }
 
+#Lee linea por linea el archivo de datos y lo imprime directamente en la terminal.
 mostrar(){
 	clear
 	echo -e "\tMostrando contenido de pokemones.datos\n"
@@ -41,13 +57,16 @@ mostrar(){
 	read -p " Presiona ENTER para continuar"
 }
 
+#Busca un ID especifico en el archivo para comprobar si ese pokemon ya existe en la base.
 existe(){
         registroPokemon=$(awk -F: -v clave="$1" '$1==clave{print $0}' pokemones.datos)
 }
 
+#Solicita todos los datos de un pokemon nuevo, valida que el ID no exista y lo agrega al archivo protegido.
 alta(){
 	clear
 	echo -e "\tGenerando alta de pokemon\n"
+	bloqueo
 	echo -n " ID: "; read ID
 	#preguntamos ID del pokemon que se desea dar de alta para ver si existe
 	existe "$ID"
@@ -71,10 +90,12 @@ alta(){
 	else
 		echo -e "\n Un pokemon ya fue registrado con ese ID"
 	fi
+	desbloqueo
 	echo ""
 	read -p " Presione ENTER para continuar"
 }
 
+#Despliega un submenu para elegir que campo especifico se desea cambiar.
 menuModificar(){
 	clear
         echo -e "\tSelecciona campo a modificar\n"
@@ -109,6 +130,7 @@ menuModificar(){
         esac
 }
 
+#Revisa que el nuevo dato ingresado no este vacio antes de proceder a guardarlo.
 vacioModificar(){
 	if [ "$1" != "" ]
         then
@@ -119,7 +141,9 @@ vacioModificar(){
         fi
 }
 
+#Sobrescribe el archivo de datos actualizando solo el campo que el usuario eligio modificar.
 guardarModif(){
+	bloqueo
 	awk -F: -v llave="$Id" -v nom=$"$nombre" -v esp="$especie"\
                 -v alt="$altura" -v pes="$peso" -v gen="$generacion"\
                 -v  habit="$habitat" -v habil="$habilidad"\
@@ -143,8 +167,10 @@ guardarModif(){
         ($1!=llave){print}
         ' pokemones.datos > temporal.datos
         mv temporal.datos pokemones.datos
+	desbloqueo
 }
 
+#Solicita el ID a editar, valida su existencia y arranca el proceso de modificacion.
 modificar(){
 	clear
 	echo -e "\tGenerar modificacion a un Pokemon\n"
@@ -159,19 +185,23 @@ modificar(){
 	read -p " Presiona ENTER para continuar"
 }
 
+#Elimina el registro de un pokemon creando un nuevo archivo que omite el ID proporcionado.
 baja(){
 	clear
 	echo -e "\tGenerando baja de pokemon\n"
+	bloqueo
 	echo -n " ID del pokemon que deseas borrar: "; read ID
 	#mandamos a un archivo temporal todos aquellos pokemones que no
 	#coincidan con el ID del pokemon que se desea borrar
 	awk -F: -v clave="$ID" '($1!=clave){print}' pokemones.datos > temporal.datos
 	#renombramos el rchivo temporal a nuestro archivo principal
 	mv temporal.datos pokemones.datos
+	desbloqueo
 	echo ""
 	read -p " Presione ENTER para continuar"
 }
 
+#Solicita un ID y muestra toda la informacion completa de ese pokemon si lo encuentra.
 consulta(){
 	clear
 	echo -e "\tConsultado datos de pokemon\n"
@@ -188,10 +218,12 @@ consulta(){
 	read -p " Presiona ENTER para continuar"
 }
 
+#Comprueba si existe al menos un pokemon en la base de datos que pertenezca a la generacion buscada.
 existeGen(){
 	hayGeneracion=$(awk -F: -v llave="$numGeneracion" '($6==llave){print}' pokemones.datos)
 }
 
+#Genera un archivo de texto nuevo con una lista formateada de todos los pokemones de cierta generacion.
 reporte(){
 	clear
 	echo -e "\tGenerando reporte\n"
